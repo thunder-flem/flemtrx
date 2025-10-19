@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flæmtrx.org - Fleming's Official Website</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0a0a0a; overflow-x: hidden; position: relative; }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a0a0a 0%, #0a0505 100%); z-index: -2; }
+        body::after { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); z-index: -1; }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes glow { 0%, 100% { text-shadow: 0 0 10px rgba(255, 0, 0, 0.5), 0 0 20px rgba(255, 0, 0, 0.3); } 50% { text-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 0 0 40px rgba(255, 0, 0, 0.5); } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-50px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes shimmer { 0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); } 100% { transform: translateX(100%) translateY(100%) rotate(45deg); } }
+        #welcomePage { display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; gap: 2rem; animation: slideInUp 0.8s ease-out; }
+        #welcomePage.hidden { display: none; }
+        .welcome-logo { width: 120px; height: 120px; border: 4px solid #ff0000; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #ff0000 0%, #8b0000 100%); font-weight: bold; color: #fff; font-size: 2.5rem; box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); overflow: hidden; position: relative; }
+        .welcome-logo img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .welcome-title { font-size: 3rem; font-weight: 900; color: #ff0000; animation: glow 2s ease-in-out infinite; }
+        .welcome-subtitle { font-size: 1.3rem; color: #ccc; margin-bottom: 1rem; }
+        .welcome-tagline { font-size: 1.1rem; color: #999; max-width: 400px; text-align: center; line-height: 1.6; }
+        .get-started-btn { padding: 1rem 2.5rem; font-size: 1.1rem; background: #fff; color: #000; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; margin-top: 1rem; }
+        .get-started-btn:hover { background: #ff0000; color: #fff; box-shadow: 0 0 20px rgba(255, 0, 0, 0.6); transform: translateY(-3px); }
+        #loginPage { display: none; align-items: center; justify-content: center; min-height: 100vh; animation: slideInUp 0.8s ease-out; }
+        #loginPage.active { display: flex; }
+        .login-container { background: linear-gradient(135deg, rgba(26, 10, 10, 0.9) 0%, rgba(15, 5, 5, 0.9) 100%); border: 3px solid #ff0000; border-radius: 20px; padding: 3rem; width: 90%; max-width: 420px; box-shadow: 0 0 50px rgba(255, 0, 0, 0.4); }
+        .login-header { text-align: center; margin-bottom: 2.5rem; }
+        .login-title { font-size: 2.2rem; font-weight: 900; color: #ff0000; margin-bottom: 0.5rem; }
+        .login-subtitle { color: #ddd; font-size: 0.95rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; color: #ff0000; font-weight: bold; text-transform: uppercase; font-size: 0.85rem; margin-bottom: 0.5rem; letter-spacing: 0.5px; }
+        .form-input { width: 100%; padding: 0.9rem; background: rgba(255, 255, 255, 0.05); border: 2px solid #ff0000; border-radius: 8px; color: #fff; font-size: 1rem; font-family: inherit; transition: all 0.3s ease; }
+        .form-input::placeholder { color: #777; }
+        .form-input:focus { outline: none; background: rgba(255, 255, 255, 0.1); box-shadow: 0 0 15px rgba(255, 0, 0, 0.4); }
+        .login-btn { width: 100%; padding: 1rem; background: #ff0000; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 1.05rem; cursor: pointer; transition: all 0.3s ease; margin-top: 1rem; }
+        .login-btn:hover { background: #cc0000; transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 0, 0, 0.4); }
+        .back-btn { width: 100%; padding: 0.8rem; background: transparent; color: #999; border: 1px solid #666; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; margin-top: 1rem; }
+        .back-btn:hover { color: #fff; border-color: #ff0000; }
+        #mainSite { display: none; flex-direction: column; min-height: 100vh; }
+        #mainSite.active { display: flex; }
+        header { padding: 1.5rem 3rem; display: flex; align-items: center; gap: 1.5rem; border-bottom: 2px solid #ff0000; background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%); position: sticky; top: 0; z-index: 100; }
+        .header-left { display: flex; align-items: center; gap: 1.5rem; flex: 1; }
+        .logo { width: 80px; height: 80px; border: 3px solid #ff0000; border-radius: 50%; box-shadow: 0 0 20px rgba(255, 0, 0, 0.3); display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #ff0000 0%, #8b0000 100%); font-weight: bold; color: #fff; font-size: 1.5rem; overflow: hidden; position: relative; }
+        .logo img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .header-title { font-size: 1.8rem; font-weight: 900; color: #ff0000; text-shadow: 0 0 10px rgba(255, 0, 0, 0.5); }
+        .logout-btn { padding: 0.6rem 1.2rem; background: #ff0000; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; }
+        .logout-btn:hover { background: #cc0000; }
+        .main-content-wrapper { display: flex; flex: 1; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%); border-right: 2px solid #333; padding: 2rem 0; overflow-y: auto; flex-shrink: 0; }
+        .nav-section { margin-bottom: 2rem; }
+        .nav-title { padding: 0.5rem 2rem; font-size: 1.3rem; font-weight: bold; color: #ff0000; margin-bottom: 1rem; letter-spacing: 1px; text-transform: uppercase; border-left: 4px solid #ff0000; }
+        .nav-item { padding: 1rem 2rem; cursor: pointer; transition: all 0.3s ease; border-left: 4px solid transparent; font-size: 1.1rem; color: #ccc; }
+        .nav-item:hover { border-left-color: #ff0000; color: #fff; transform: translateX(5px); }
+        .nav-item.active { background: rgba(255, 0, 0, 0.15); border-left-color: #ff0000; color: #fff; font-weight: bold; }
+        .content-area { flex: 1; padding: 3rem 4rem; overflow-y: auto; }
+        .content-section { display: none; }
+        .content-section.active { display: block; animation: fadeInUp 0.6s ease-out; }
+        .section-title { font-size: 3.5rem; font-weight: 900; margin-bottom: 2rem; letter-spacing: 2px; background: linear-gradient(135deg, #ff0000 0%, #ff6666 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .section-content { font-size: 1.2rem; line-height: 1.8; color: #ddd; margin-bottom: 2rem; }
+        .post-creator { background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(255, 0, 0, 0.05) 100%); border: 2px solid #ff0000; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+        .post-input { width: 100%; padding: 1rem; background: rgba(255, 255, 255, 0.05); border: 1px solid #ff0000; border-radius: 8px; color: #fff; font-size: 1rem; margin-bottom: 1rem; resize: vertical; min-height: 80px; font-family: inherit; }
+        .post-input:focus { outline: none; background: rgba(255, 255, 255, 0.1); box-shadow: 0 0 10px rgba(255, 0, 0, 0.3); }
+        .post-controls { display: flex; gap: 1rem; }
+        .post-btn { flex: 1; padding: 0.8rem; background: #ff0000; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s ease; }
+        .post-btn:hover { background: #cc0000; transform: translateY(-2px); }
+        .post-card { background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(255, 0, 0, 0.02) 100%); border: 1px solid rgba(255, 0, 0, 0.3); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; transition: all 0.3s ease; }
+        .post-card:hover { border-color: #ff0000; box-shadow: 0 5px 20px rgba(255, 0, 0, 0.2); }
+        .post-header { display: flex; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 0, 0, 0.2); }
+        .post-author { color: #ff0000; font-weight: bold; }
+        .post-time { color: #999; font-size: 0.9rem; }
+        .post-content { margin-bottom: 1rem; line-height: 1.6; color: #ddd; }
+        .post-actions { display: flex; gap: 1rem; }
+        .action-btn { padding: 0.5rem 1rem; background: rgba(255, 0, 0, 0.2); border: 1px solid #ff0000; color: #ff0000; border-radius: 6px; cursor: pointer; transition: all 0.3s ease; font-size: 0.9rem; }
+        .action-btn:hover { background: #ff0000; color: #fff; }
+        .bullet-item { margin-bottom: 2rem; padding: 1.5rem 2rem; background: linear-gradient(135deg, rgba(255, 0, 0, 0.05) 0%, rgba(255, 0, 0, 0.02) 100%); border-left: 4px solid #ff0000; border-radius: 8px; transition: all 0.4s ease; }
+        .bullet-item:hover { background: linear-gradient(135deg, rgba(255, 0, 0, 0.15) 0%, rgba(255, 0, 0, 0.05) 100%); transform: translateX(10px); box-shadow: 0 5px 20px rgba(255, 0, 0, 0.3); }
+        .bullet-title { font-size: 1.4rem; font-weight: bold; color: #ff0000; margin-bottom: 0.8rem; }
+        .bullet-text { font-size: 1.1rem; line-height: 1.6; color: #ccc; }
+        .subsection-title { font-size: 2rem; font-weight: bold; margin: 2.5rem 0 1.5rem 0; color: #fff; text-transform: uppercase; letter-spacing: 1px; padding-bottom: 1rem; border-bottom: 2px solid rgba(255, 0, 0, 0.3); }
+        .profiles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 2rem; padding: 2rem 0; }
+        .profile-circle { text-align: center; cursor: pointer; transition: all 0.3s ease; }
+        .circle { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #ff0000 0%, #8b0000 100%); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; color: #fff; margin: 0 auto 1rem; border: 3px solid #ff0000; box-shadow: 0 0 20px rgba(255, 0, 0, 0.3); transition: all 0.3s ease; overflow: hidden; position: relative; }
+        .circle img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .profile-circle:hover .circle { transform: scale(1.1); box-shadow: 0 0 30px rgba(255, 0, 0, 0.6); }
+        .profile-name { color: #fff; font-weight: bold; font-size: 1.1rem; }
+        .profile-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .profile-modal.active { display: flex; }
+        .modal-content { background: linear-gradient(135deg, rgba(26, 10, 10, 0.95) 0%, rgba(15, 5, 5, 0.95) 100%); border: 3px solid #ff0000; border-radius: 20px; padding: 2rem; width: 90%; max-width: 500px; position: relative; box-shadow: 0 0 50px rgba(255, 0, 0, 0.5); }
+        .close-btn { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: #ff0000; font-size: 2rem; cursor: pointer; transition: all 0.3s ease; }
+        .close-btn:hover { transform: scale(1.2); }
+        .modal-header { display: flex; align-items: center; gap: 2rem; margin-bottom: 2rem; }
+        .modal-circle { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #ff0000 0%, #8b0000 100%); display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; color: #fff; border: 3px solid #ff0000; flex-shrink: 0; overflow: hidden; position: relative; }
+        .modal-circle img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .modal-info { flex: 1; }
+        .modal-name { font-size: 1.8rem; font-weight: bold; color: #ff0000; margin-bottom: 0.5rem; }
+        .modal-grade { color: #ddd; font-size: 1rem; }
+        .modal-section { margin-bottom: 1.5rem; }
+        .modal-label { color: #ff0000; font-weight: bold; text-transform: uppercase; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .modal-text { color: #ccc; line-height: 1.6; font-size: 1rem; }
+        .meme-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; padding: 2rem 0; }
+        .meme-card { background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(255, 0, 0, 0.05) 100%); border: 2px solid rgba(255, 0, 0, 0.3); border-radius: 12px; padding: 1rem; transition: all 0.4s ease; cursor: pointer; animation: slideInLeft 0.6s ease-out; }
+        .meme-card:hover { border-color: #ff0000; transform: translateY(-10px) scale(1.02); box-shadow: 0 10px 30px rgba(255, 0, 0, 0.4); }
+        .meme-placeholder { width: 100%; height: 280px; background: linear-gradient(135deg, #1a0a0a 0%, #2a0a0a 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: rgba(255, 0, 0, 0.3); position: relative; overflow: hidden; }
+        .meme-placeholder::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255, 0, 0, 0.1), transparent); animation: shimmer 3s infinite; }
+        .meme-placeholder img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .meme-title { margin-top: 1rem; color: #ff0000; font-weight: bold; font-size: 1.1rem; text-align: center; }
+        .video-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; padding: 2rem 0; }
+        .video-card { background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(255, 0, 0, 0.05) 100%); border: 2px solid rgba(255, 0, 0, 0.3); border-radius: 12px; padding: 1rem; transition: all 0.4s ease; animation: fadeInUp 0.6s ease-out; }
+        .video-card:hover { border-color: #ff0000; transform: translateY(-5px); box-shadow: 0 10px 30px rgba(255, 0, 0, 0.4); }
+        .video-placeholder { width: 100%; height: 220px; background: linear-gradient(135deg, #1a0a0a 0%, #2a0a0a 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 4rem; color: rgba(255, 0, 0, 0.3); position: relative; overflow: hidden; }
+        .video-placeholder::before { content: '▶'; position: absolute; font-size: 5rem; color: rgba(255, 0, 0, 0.5); animation: pulse 2s infinite; }
+        .video-placeholder video { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .video-title { margin-top: 1rem; color: #ff0000; font-weight: bold; font-size: 1.1rem; text-align: center; }
+        .artwork-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem; padding: 2rem 0; }
+        .artwork-card { background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(255, 0, 0, 0.05) 100%); border: 2px solid rgba(255, 0, 0, 0.3); border-radius: 12px; padding: 1rem; transition: all 0.4s ease; cursor: pointer; animation: float 3s ease-in-out infinite; }
+        .artwork-card:nth-child(2n) { animation-delay: 0.5s; }
+        .artwork-card:nth-child(3n) { animation-delay: 1s; }
+        .artwork-card:hover { border-color: #ff0000; transform: translateY(-15px) rotate(2deg); box-shadow: 0 15px 40px rgba(255, 0, 0, 0.5); }
+        .artwork-placeholder { width: 100%; height: 250px; background: linear-gradient(135deg, #1a0a0a 0%, #2a0a0a 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: rgba(255, 0, 0, 0.3); position: relative; overflow: hidden; }
+        .artwork-placeholder::before { content: '🎨'; position: absolute; font-size: 4rem; animation: pulse 2s infinite; }
+        .artwork-placeholder img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .artwork-title { margin-top: 1rem; color: #ff0000; font-weight: bold; font-size: 1rem; text-align: center; }
+        @media (max-width: 768px) { 
+            .sidebar { width: 100%; border-right: none; border-bottom: 2px solid #333; } 
+            .main-content-wrapper { flex-direction: column; } 
+            .content-area { padding: 2rem; }
+            .section-title { font-size: 2.5rem; }
+            header { padding: 1rem 1.5rem; }
+            .meme-gallery, .video-gallery, .artwork-gallery { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+    <div id="welcomePage">
+        <div class="welcome-logo">
+            <!-- TO ADD YOUR LOGO IMAGE: Replace the src with your image URL -->
+            <img src="logo.jpg" alt="Logo" id="welcomeLogoImg" style="display: none;">
+            Fx
+        </div>
+        <h1 class="welcome-title">WELCOME!</h1>
+        <p class="welcome-subtitle">Fleming's Official Website</p>
+        <p class="welcome-tagline">Join our community to discuss AI, share ideas, and explore the future of technology.</p>
+        <button class="get-started-btn" onclick="showLoginPage()">GET STARTED</button>
+    </div>
+
+    <div id="loginPage">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-title">Flæmtrx</div>
+                <div class="login-subtitle">Welcome to Fleming's Community</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-input" id="usernameInput" placeholder="Enter your username">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-input" id="passwordInput" placeholder="Enter your password">
+            </div>
+            <button class="login-btn" onclick="login()">LOGIN</button>
+            <button class="back-btn" onclick="showWelcomePage()">BACK</button>
+        </div>
+    </div>
+
+    <div id="mainSite">
+        <header>
+            <div class="header-left">
+                <div class="logo">
+                    <img src="logo.jpg" alt="Logo" id="headerLogoImg">
+                    
+                </div>
+                <div class="header-title">FLÆMTRX</div>
+            </div>
+            <button class="logout-btn" onclick="logout()">LOGOUT</button>
+        </header>
+
+        <div class="main-content-wrapper">
+            <nav class="sidebar">
+                <div class="nav-section">
+                    <div class="nav-title">Social</div>
+                    <div class="nav-item active" data-section="home" onclick="switchSection('home')">Home</div>
+                    <div class="nav-item" data-section="articles" onclick="switchSection('articles')">Short Articles</div>
+                    <div class="nav-item" data-section="polls" onclick="switchSection('polls')">Interactive Polls</div>
+                    <div class="nav-item" data-section="memes" onclick="switchSection('memes')">Memes</div>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-title">About AI</div>
+                    <div class="nav-item" data-section="what-is-ai" onclick="switchSection('what-is-ai')">What is AI?</div>
+                    <div class="nav-item" data-section="history" onclick="switchSection('history')">History of AI</div>
+                    <div class="nav-item" data-section="dangers" onclick="switchSection('dangers')">Dangers of AI</div>
+                    <div class="nav-item" data-section="prevent" onclick="switchSection('prevent')">How to Prevent</div>
+                    <div class="nav-item" data-section="pros" onclick="switchSection('pros')">Pros of AI</div>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-title">More</div>
+                    <div class="nav-item" data-section="members" onclick="switchSection('members')">Profiles</div>
+                    <div class="nav-item" data-section="advocacy" onclick="switchSection('advocacy')">Advocacy</div>
+                    <div class="nav-item" data-section="artworks" onclick="switchSection('artworks')">Artworks</div>
+                </div>
+            </nav>
+
+            <main class="content-area">
+                <div class="content-section active" id="home">
+                    <h1 class="section-title">HOME</h1>
+                    <div class="post-creator">
+                        <textarea class="post-input" id="postText" placeholder="Share your thoughts about AI..."></textarea>
+                        <div class="post-controls">
+                            <button class="post-btn" onclick="createPost()">POST</button>
+                            <button class="post-btn" onclick="clearPost()" style="background: #666;">CLEAR</button>
+                        </div>
+                    </div>
+                    <div id="postsContainer"></div>
+                </div>
+
+                <div class="content-section" id="articles">
+                    <h1 class="section-title">SHORT ARTICLES</h1>
+                    <p class="section-content">Read insightful articles about AI and technology written by our community members.</p>
+                    
+                    <div class="bullet-item">
+                        <div class="bullet-title">AI in the Classroom: Helper or Shortcut?</div>
+                        <div class="bullet-text" style="margin-bottom: 0.5rem;"><em>By Joshua Marron Gulmatico</em></div>
+                        <div class="bullet-text">Artificial Intelligence used to sound like something straight out of a sci-fi movie—but now, it's sitting right next to us in class. From apps that explain lessons to tools that write essays in seconds, AI is changing how we learn. Supporters say it's the future of education, helping students understand lessons better. But not everyone feels that way. Some teachers worry that students depend on AI too much. School isn't just about getting the right answers—it's about the process, the mistakes, and the effort that help us grow.</div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">AI and the Rise of Anti-Intellectualism</div>
+                        <div class="bullet-text" style="margin-bottom: 0.5rem;"><em>By Camille Fuentebella</em></div>
+                        <div class="bullet-text">As Artificial Intelligence becomes more advanced, it's changing how people think, learn, and share information. With AI tools able to summarize books and answer questions instantly, many are beginning to value convenience over true understanding. This shift has fueled a quiet rise in anti-intellectualism—a growing disregard for deep thinking and learning. True intelligence still requires curiosity, discipline, and the will to understand beyond what a machine can tell us.</div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">AI in Schools: A New Kind of Learning Partner</div>
+                        <div class="bullet-text" style="margin-bottom: 0.5rem;"><em>By Reiner Mabaquiao</em></div>
+                        <div class="bullet-text">Artificial Intelligence isn't just something we read about anymore—it's sitting right beside us in the classroom. Many schools now use AI for personalized learning, where the computer adapts lessons to match a student's pace. But not everyone is cheering. Others worry that too much AI might make learning "too easy" or take away the effort that helps us grow.</div>
+                    </div>
+
+                    <h2 class="subsection-title">Deep Dive</h2>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">From Learning Machines to Living Systems: The Evolution of AI</div>
+                        <div class="bullet-text" style="margin-bottom: 0.5rem;"><em>By Hillary Dageno</em></div>
+                        <div class="bullet-text">Artificial intelligence (AI) represents a transformative field within computer science, dedicated to equipping machines with the capacity to simulate and execute tasks traditionally requiring human intelligence. This includes cognitive functions such as learning from experience, understanding natural language, recognizing patterns, solving complex problems, and making informed decisions. The impact of AI is becoming increasingly pervasive, revolutionizing numerous industries and aspects of daily life—from enhancing efficiency in healthcare through diagnostic tools, to personalizing experiences in e-commerce and entertainment, to powering autonomous vehicles. As AI continues to evolve, its applications are expected to expand further, leading to significant advancements that redefine human-computer interaction.</div>
+                    </div>
+                </div>
+
+                <div class="content-section" id="polls">
+                    <h1 class="section-title">INTERACTIVE POLLS</h1>
+                    <p class="section-content">Share your opinion on AI-related topics!</p>
+                    
+                    <div class="bullet-item">
+                        <div class="bullet-title">Do you use AI tools daily?</div>
+                        <div style="margin-top: 1rem;">
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Yes, regularly</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Sometimes</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Rarely</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Never</button>
+                        </div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">Should AI be allowed to create art and compete with human artists?</div>
+                        <div style="margin-top: 1rem;">
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Yes, it's progress</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">No, only humans should</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Yes, but in separate categories</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Unsure</button>
+                        </div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">What concerns you most about AI?</div>
+                        <div style="margin-top: 1rem;">
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Job displacement</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Privacy & data security</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Bias & discrimination</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Loss of human skills</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">AI becoming too powerful</button>
+                        </div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">Do you think students should be allowed to use AI for homework?</div>
+                        <div style="margin-top: 1rem;">
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Yes, it's a helpful tool</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">No, it's cheating</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Only for research</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">With teacher supervision</button>
+                        </div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">Will AI take over most human jobs in the next 20 years?</div>
+                        <div style="margin-top: 1rem;">
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Definitely</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Probably</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Unlikely</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Not at all</button>
+                        </div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">Should there be stricter regulations on AI development?</div>
+                        <div style="margin-top: 1rem;">
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Yes, immediately</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Yes, but gradually</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">No, let it develop freely</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Only in certain areas</button>
+                        </div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">Which AI application excites you the most?</div>
+                        <div style="margin-top: 1rem;">
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Healthcare & medicine</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Education</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Climate & environment</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Entertainment & creativity</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Transportation</button>
+                        </div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">Do you trust AI to make important decisions about your life?</div>
+                        <div style="margin-top: 1rem;">
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Yes, completely</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Somewhat</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Not really</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">No, never</button>
+                        </div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">Has AI made you more productive or more dependent?</div>
+                        <div style="margin-top: 1rem;">
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">More productive</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">More dependent</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Both equally</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Neither</button>
+                        </div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">Should AI have legal rights or responsibilities?</div>
+                        <div style="margin-top: 1rem;">
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Yes, like corporations</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">No, it's just a tool</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Only advanced AI</button>
+                            <button class="action-btn" style="margin: 0.5rem; padding: 0.8rem 1.5rem;">Not sure yet</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-section" id="memes">
+                    <h1 class="section-title">MEMES</h1>
+                    <p class="section-content">Enjoy some AI-related humor!</p>
+                    
+                    <div class="bullet-item">
+                        <div style="background: #1a1a1a; padding: 2rem; border-radius: 8px; text-align: center;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">🤖</div>
+                            <div style="font-size: 1.3rem; color: #fff; margin-bottom: 0.5rem;">Me: Can you help with this task?</div>
+                            <div style="font-size: 1.3rem; color: #ff0000;">AI: I'm just a language model...</div>
+                            <div style="font-size: 1.1rem; color: #999; margin-top: 1rem;">*Proceeds to write a complete thesis*</div>
+                        </div>
+                    </div>
+                    
+                    <div class="meme-gallery" id="memeGallery"></div>
+                </div>
+
+                <div class="content-section" id="members">
+                    <h1 class="section-title">PROFILES</h1>
+                    <p class="section-content">Meet the members of the Flæmtrx community!</p>
+                    <div class="profiles-grid" id="profilesGrid"></div>
+                </div>
+
+                <div class="content-section" id="what-is-ai">
+                    <h1 class="section-title">What is Artificial Intelligence?</h1>
+                    <p class="section-content">
+                        Artificial intelligence (AI) is a set of technologies that enable computers to perform a variety of advanced functions, including the ability to see, understand and translate spoken and written language, analyze data, make recommendations, and more.
+                    </p>
+                    <p class="section-content">
+                        AI has developed rapidly in the past few years, becoming a tool that many people use in their daily lives. It makes work faster and easier, offering results that once required greater time and effort. Because of this, AI is seen as a major achievement in human progress, helping society discover new ways to solve problems and create innovations.
+                    </p>
+                    <p class="section-content">
+                        However, this advancement also brings serious consequences. As people grow more dependent on AI, they begin to lose the training that develops essential human skills. For instance, students who use AI to write essays may produce complete work, but they miss the chance to practice critical thinking and creativity. In the long run, this reliance weakens originality, discipline, and problem-solving abilities—qualities that are necessary for growth and survival.
+                    </p>
+                </div>
+
+                <div class="content-section" id="history">
+                    <h1 class="section-title">History of AI</h1>
+                    
+                    <h2 class="subsection-title">Birth of Artificial Intelligence</h2>
+                    <p class="section-content">
+                        Artificial Intelligence, often abbreviated as "AI," refers to computer systems and machines that are built to mimic human intelligence. The concept of artificial intelligence has deep historical roots, dating back to ancient philosophers who pondered the nature of life and consciousness. In those early times, inventors created devices known as "automatons"—mechanical creations that could move on their own without human control.
+                    </p>
+                    <p class="section-content">
+                        AI began in 1950 when British mathematician and computer science pioneer Alan Turing posed the groundbreaking question: "Can machines think?" In his influential paper titled "Computing Machinery and Intelligence," Turing introduced what is now known as the Turing Test. The term artificial intelligence was coined by McCarthy in 1956 in connection with a proposed summer workshop at Dartmouth College.
+                    </p>
+
+                    <h2 class="subsection-title">First AI Winter</h2>
+                    <p class="section-content">
+                        The period between the coining of the term "artificial intelligence" and the 1980s was marked by both significant progress and notable challenges in AI research. In 1960, John McCarthy developed LISP, a programming language based on the mathematical concept of recursive functions. Despite early breakthroughs, the field of AI faced a setback when an applied mathematician gave a report that led to less support and funding from the British government for the study of AI.
+                    </p>
+
+                    <h2 class="subsection-title">Expert Systems and Second AI Winter</h2>
+                    <p class="section-content">
+                        After the first AI Winter, it was followed by the Expert Systems era. During this time, systems that allowed computers to learn from their mistakes and make independent decisions became popular. The first expert system was released into the commercial market. However, the second AI Winter eventually arrived—a time marked by declining interest and reduced funding for AI research.
+                    </p>
+
+                    <h2 class="subsection-title">AI Agents and Artificial General Intelligence</h2>
+                    <p class="section-content">
+                        Following the rise of machine learning, we entered a new phase in AI development marked by the growing presence of everyday AI tools like virtual assistants and advanced search engines. In 2016, Hanson Robotics introduced Sophia, a humanoid robot with lifelike features. In 2020, OpenAI launched beta testing for GPT-3. In 2021, OpenAI released DALL·E, an AI system that could generate original images based on text prompts.
+                    </p>
+                </div>
+
+                <div class="content-section" id="dangers">
+                    <h1 class="section-title">Dangers of AI</h1>
+                    
+                    <div class="bullet-item">
+                        <div class="bullet-title">Deepfakes Distort Online Reality</div>
+                        <div class="bullet-text">Deepfakes digitally manipulate what we see on the internet. It alters pictures, videos, and audios, making the audience believe that it is real.</div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">Lack of Data Privacy</div>
+                        <div class="bullet-text">Some AI tools require you to enter your data, which could have high security risks. Sensitive information can be leaked or misused without proper consent.</div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">Job Loss and Unemployment</div>
+                        <div class="bullet-text">AI can perform many tasks faster and more accurately than humans. Machines are replacing workers in factories, offices, and service industries.</div>
+                    </div>
+                </div>
+
+                <div class="content-section" id="prevent">
+                    <h1 class="section-title">Ways to Prevent Dangers</h1>
+                    
+                    <div class="bullet-item">
+                        <div class="bullet-title">Protect Against Deepfakes</div>
+                        <div class="bullet-text">Be cautious when posting photos and set privacy settings carefully. Be more private with your images to protect yourself from manipulators.</div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">Strengthen Data Privacy</div>
+                        <div class="bullet-text">Verify if websites are credible or legitimate. Avoid giving out sensitive information such as passwords or addresses.</div>
+                    </div>
+                </div>
+
+                <div class="content-section" id="pros">
+                    <h1 class="section-title">Pros of AI</h1>
+                    
+                    <div class="bullet-item">
+                        <div class="bullet-title">Increased Efficiency</div>
+                        <div class="bullet-text">AI has the ability to automate repetitive tasks, improve data analysis and decision-making, and optimize complex systems.</div>
+                    </div>
+
+                    <div class="bullet-item">
+                        <div class="bullet-title">Reducing Human Error</div>
+                        <div class="bullet-text">Decisions made by AI are based on previously gathered information and algorithms. When programmed correctly, errors can be minimized.</div>
+                    </div>
+                </div>
+
+                <div class="content-section" id="advocacy">
+                    <h1 class="section-title">ADVOCACY</h1>
+                    <p class="section-content">Learn about our mission to promote responsible AI use and education.</p>
+                    
+                    <div class="video-gallery" id="videoGallery"></div>
+                </div>
+
+                <div class="content-section" id="artworks">
+                    <h1 class="section-title">ARTWORKS</h1>
+                    <p class="section-content">Explore creative works inspired by AI and technology.</p>
+                    
+                    <div class="artwork-gallery" id="artworkGallery"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="profile-modal" id="profileModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">×</button>
+            <div class="modal-header">
+                <div class="modal-circle" id="modalCircle"></div>
+                <div class="modal-info">
+                    <div class="modal-name" id="modalName"></div>
+                    <div class="modal-grade" id="modalGrade"></div>
+                </div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">Motto</div>
+                <div class="modal-text" id="modalMotto" style="font-style: italic;"></div>
+            </div>
+            <div class="modal-section">
+                <div class="modal-label">About</div>
+                <div class="modal-text" id="modalAbout"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let posts = [];
+        
+        
+        const logoImageUrl = "logo.jpg"; 
+        
+       window.addEventListener('DOMContentLoaded', function() {
+    if (logoImageUrl) {
+       
+        document.getElementById('welcomeLogoImg').src = logoImageUrl;
+        document.getElementById('welcomeLogoImg').style.display = 'block';
+        document.querySelector('.welcome-logo').childNodes[2].style.display = 'none';
+        
+        document.getElementById('headerLogoImg').src = logoImageUrl;
+        document.getElementById('headerLogoImg').style.display = 'block';
+        document.querySelector('.logo').childNodes[2].style.display = 'none';
+    }
+});
+        
+        
+        const memeImages = [
+            
+             { url: "memes/31e787195d485f6aab01f0604a2f8346.jpg", title: "Meme 1" },
+             { url: "memes/a9abh9.jpg", title: "Meme 2" },
+             { url: "memes/a9abms.jpg", title: "Meme 3" },
+             { url: "memes/a9adqn.jpg", title: "Meme 4" },
+             { url: "memes/a9ae1d.jpg", title: "Meme 5" },
+             { url: "memes/a9ae8r.jpg", title: "Meme 6" },
+             { url: "memes/a9aext.jpg", title: "Meme 7" },
+             { url: "memes/a9af93.jpg", title: "Meme 8" },
+             { url: "memes/a9afcy.jpg", title: "Meme 9" },
+             { url: "memes/IMG_3405.JPG", title: "Meme 10" },
+             { url: "memes/IMG_3406.JPG", title: "Meme 11" },
+             { url: "memes/IMG_3407.JPG", title: "Meme 12" },
+             { url: "memes/PRECAL PLUS AI .jpeg", title: "Meme 13" },
+             { url: "memes/AI-Memes-6-75885-300x300.png", title: "Meme 14" },
+             { url: "memes/meme 1.png", title: "Meme 15" },
+             { url: "memes/meme.jpg", title: "Meme 16" },
+             { url: "memes/IMG_2711.JPG", title: "Meme 17" },
+             { url: "memes/IMG_2715.JPG", title: "Meme 18" },
+             { url: "memes/IMG_2716.JPG", title: "Meme 19" },
+             { url: "memes/IMG_2718.JPG", title: "Meme 20" },
+            
+        ];
+        
+        function loadMemes() {
+            const memeGallery = document.getElementById('memeGallery');
+            if (memeGallery.children.length > 0) return;
+            
+            // Create 20 meme placeholders
+            for (let i = 0; i < 20; i++) {
+                const memeCard = document.createElement('div');
+                memeCard.className = 'meme-card';
+                memeCard.style.animationDelay = `${i * 0.1}s`;
+                
+                const memeData = memeImages[i];
+                const hasImage = memeData && memeData.url;
+                
+                memeCard.innerHTML = `
+                    <div class="meme-placeholder">
+                        ${hasImage ? `<img src="${memeData.url}" alt="${memeData.title || 'Meme ' + (i + 1)}">` : '🎭'}
+                    </div>
+                    <div class="meme-title">${hasImage ? memeData.title : 'Meme ' + (i + 1)}</div>
+                `;
+                
+                memeGallery.appendChild(memeCard);
+            }
+        }
+        
+        
+        const videos = [
+            
+             { url: "final nagid ni FR.mp4", title: "Advocacy Video 1" },
+             { url: "Group 3.mp4", title: "Advocacy Video 2" },
+             { url: "Group 6.mp4", title: "Advocacy Video 3" },
+             { url: "Podcast.mp4", title: "Advocacy Video 4" },
+             
+        ];
+        
+        function loadVideos() {
+            const videoGallery = document.getElementById('videoGallery');
+            if (videoGallery.children.length > 0) return;
+            
+            // Create 4 video placeholders
+            for (let i = 0; i < 4; i++) {
+                const videoCard = document.createElement('div');
+                videoCard.className = 'video-card';
+                videoCard.style.animationDelay = `${i * 0.15}s`;
+                
+                const videoData = videos[i];
+                const hasVideo = videoData && videoData.url;
+                
+                videoCard.innerHTML = `
+                    <div class="video-placeholder">
+                        ${hasVideo ? `<video src="${videoData.url}" controls></video>` : '🎬'}
+                    </div>
+                    <div class="video-title">${hasVideo ? videoData.title : 'Advocacy Video ' + (i + 1)}</div>
+                `;
+                
+                videoGallery.appendChild(videoCard);
+            }
+        }
+        
+        
+        const artworkImages = [
+           
+            { url: "ALLAMADO(2).jpg", title: "Artwork 1" },
+            { url: "ALLAMADO.jpg", title: "Artwork 2" },
+            { url: "ALLAMADO(3).jpg", title: "Artwork 3" },
+            { url: "ALLAMADO(4).jpg", title: "Artwork 4" },
+            { url: "Contrevida.png", title: "Artwork 5" },
+            { url: "DOLOSO (2).jpeg", title: "Artwork 6" },
+            { url: "DOLOSO.jpeg", title: "Artwork 7" },
+            { url: "Fuentebella.png", title: "Artwork 8" },
+            { url: "Fuentebella (2).png", title: "Artwork 9" },
+            { url: "Grr.png", title: "Artwork 10" },
+            { url: "MABAQUIAO 1.jpg", title: "Artwork 11" },
+            { url: "MABAQUIAO 2.jpg", title: "Artwork 12" },
+            { url: "MABAQUIAO 3 .jpg", title: "Artwork 13" },
+            { url: "Paclibar (1).png", title: "Artwork 14" },
+            { url: "Gulmatico,R.png", title: "Artwork 15" },
+        ];
+        
+        function loadArtworks() {
+            const artworkGallery = document.getElementById('artworkGallery');
+            if (artworkGallery.children.length > 0) return;
+            
+            // Create 15 artwork placeholders
+            for (let i = 0; i < 15; i++) {
+                const artworkCard = document.createElement('div');
+                artworkCard.className = 'artwork-card';
+                artworkCard.style.animationDelay = `${i * 0.1}s`;
+                
+                const artworkData = artworkImages[i];
+                const hasImage = artworkData && artworkData.url;
+                
+                artworkCard.innerHTML = `
+                    <div class="artwork-placeholder">
+                        ${hasImage ? `<img src="${artworkData.url}" alt="${artworkData.title || 'Artwork ' + (i + 1)}">` : '🎨'}
+                    </div>
+                    <div class="artwork-title">${hasImage ? artworkData.title : 'Artwork ' + (i + 1)}</div>
+                `;
+                
+                artworkGallery.appendChild(artworkCard);
+            }
+        }
+
+        function showLoginPage() {
+            document.getElementById('welcomePage').style.display = 'none';
+            document.getElementById('loginPage').classList.add('active');
+        }
+
+        function showWelcomePage() {
+            document.getElementById('loginPage').classList.remove('active');
+            document.getElementById('welcomePage').style.display = 'flex';
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+        }
+
+        function login() {
+            const username = document.getElementById('usernameInput').value.trim();
+            const password = document.getElementById('passwordInput').value.trim();
+
+            if (!username || !password) {
+                alert('Please enter both username and password');
+                return;
+            }
+
+            document.getElementById('loginPage').classList.remove('active');
+            document.getElementById('mainSite').classList.add('active');
+            
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+            
+            if (posts.length === 0) {
+                posts = [
+                    {
+                        id: 1,
+                        author: 'Fleming',
+                        content: 'Welcome to Flæmtrx! This community is dedicated to discussing AI and its impact on society.',
+                        timestamp: new Date(Date.now() - 3600000),
+                        likes: 15
+                    }
+                ];
+            }
+            renderPosts();
+        }
+
+        function logout() {
+            document.getElementById('mainSite').classList.remove('active');
+            document.getElementById('welcomePage').style.display = 'flex';
+            posts = [];
+        }
+
+        function switchSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            document.querySelector(`[data-section="${sectionId}"]`).classList.add('active');
+            
+            if (sectionId === 'members') {
+                loadProfiles();
+            } else if (sectionId === 'memes') {
+                loadMemes();
+            } else if (sectionId === 'advocacy') {
+                loadVideos();
+            } else if (sectionId === 'artworks') {
+                loadArtworks();
+            }
+        }
+
+        function createPost() {
+            const postText = document.getElementById('postText').value.trim();
+            
+            if (!postText) {
+                alert('Please write something before posting!');
+                return;
+            }
+
+            const post = {
+                id: Date.now(),
+                author: 'You',
+                content: postText,
+                timestamp: new Date(),
+                likes: 0
+            };
+
+            posts.unshift(post);
+            renderPosts();
+            document.getElementById('postText').value = '';
+        }
+
+        function clearPost() {
+            document.getElementById('postText').value = '';
+        }
+
+        function deletePost(postId) {
+            posts = posts.filter(p => p.id !== postId);
+            renderPosts();
+        }
+
+        function likePost(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                post.likes++;
+                renderPosts();
+            }
+        }
+
+        function renderPosts() {
+            const container = document.getElementById('postsContainer');
+            
+            if (posts.length === 0) {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 2rem;">No posts yet. Be the first to share your thoughts!</p>';
+                return;
+            }
+
+            container.innerHTML = posts.map(post => `
+                <div class="post-card">
+                    <div class="post-header">
+                        <span class="post-author">@${post.author}</span>
+                        <span class="post-time">${formatTime(post.timestamp)}</span>
+                    </div>
+                    <div class="post-content">${post.content}</div>
+                    <div class="post-actions">
+                        <button class="action-btn" onclick="likePost(${post.id})">❤️ Like (${post.likes})</button>
+                        <button class="action-btn" onclick="deletePost(${post.id})">🗑️ Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatTime(date) {
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+            if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+            return Math.floor(diff / 86400) + 'd ago';
+        }
+
+        const profiles = [
+            { name: "John Bryle R. Aboy", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "Once is an accident, twice is a coincidence, three times is a pattern", about: "Loves the color blue. Friendly, curious, and observant. Loves Taylor Swift." },
+            { name: "William Gabriel G. Artillo", grade: "17 years old | Grade 11 - STEM | NONSHS", motto: "Be the bigger person", about: "I'm moody. I love engaging in sports like swimming and dance sport." },
+            { name: "Carlos Miguel L. Clavel", grade: "17 years old | Grade 11 - STEM | NONSHS", motto: "Trust the timing, everything happens for a reason.", about: "Loves playing billiard. Can be friendly and outgoing." },
+            { name: "Anton Jay L. De La Rosa", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "omsim ya'", about: "Generous and humble." },
+            { name: "Jhon Kyle Louise B. Gabinio", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "I Thank my God everytime I remember you", about: "Sleepy head, loyal, hello kitty lover and also a chinita lover." },
+            { name: "Ceasar Ean N. Gubatayao", grade: "Grade 11 - STEM | NONSHS", motto: "All's fair in love and poetry", about: "I'm either clueless or very self-aware, also I don't belong anywhere." },
+            { name: "Joshua Marron D. Gulmatico", grade: "17 years old | Grade 11 - STEM | NONSHS", motto: "A man should only cry two times on his life, when he loses his wallet and when he finds it empty", about: "I love reading and listening to music." },
+            { name: "John Adrianne O. Jorillo", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "Adjutorium nostrum in nomine Domine.", about: "Fr. Businessman." },
+            { name: "Karl Simon Lipa", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "Focus", about: "Professional tekken player. Professional Racer. Professional Yearner." },
+            { name: "Reiner Dominic T. Mabaquiao", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "Kung palangga mo Ang Isa ka tawo kag di sa simo ah te pati kana pilita", about: "Buot Super. Filipino is my favorite subject. Chinese garter is my favorite sport." },
+            { name: "Charles Angelo G. Maja", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "Pressure makes diamonds so with pressure we become thougher", about: "Kind, loving, and handsome." },
+            { name: "James Derek Mucha", grade: "Grade 11 - STEM | NONSHS", motto: "people change, and things go wrong, but just remember, life goes on. - mac miller", about: "Addicted to volleyball. Pala absent." },
+            { name: "Louie Albert E. Quirao", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "Eat to live, not live to eat", about: "Always Hungry. Ectomorph (damo pakan on pero wala gatambok). Loves computers." },
+            { name: "Gilvan Cyron Pedraita", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "Grind Plus Aura Farm", about: "Tall, kind, and handsome." },
+            { name: "Shanell Ann L. Abayan", grade: "Grade 11 - STEM | NONSHS", motto: "YOLO", about: "I love listening to music and capybara." },
+            { name: "Jezce Ferzceel C. Allamado", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "La vie est belle, vevest-la!", about: "I love arts." },
+            { name: "Allana Ricci J. Arucan", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "It's the thought that counts.", about: "Finds joy in simple things. More productive with music on. Loves movies and series." },
+            { name: "Stephanie G. Barroca", grade: "Grade 11 - STEM | NONSHS", motto: "PADAYON!", about: "I'm a creep. I'm a weirdo. I don't belong here." },
+            { name: "Jana Jane F. Basinillo", grade: "Grade 11 - STEM | NONSHS", motto: "Fiat Voluntas Tua", about: "Love lavender/periwinkle/amethyst colored stuff. Conscious about how I smell. Goofy but get drained easily." },
+            { name: "Blessy Zyrah C. Bullag", grade: "Grade 11 - STEM | NONSHS", motto: "To the stars, through hardship.", about: "I'm weird, random, and silly but when it's serious, I take things seriously." },
+            { name: "Sophia Liann D. Contrevida", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "Everything is going to be okay.", about: "I love sleeping. I have a sweet tooth. I forget easily." },
+            { name: "Hillary Khate T. Dageno", grade: "17 years old | Grade 11 - STEM | NONSHS", motto: "We are afflicted in every way, but not constrained", about: "I enjoy spending free time in nature or churches. I love cooking. K-pop fan." },
+            { name: "Ella Jane Doloso", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "Expectations can lead to disappointment", about: "No patience. Easily gets tired." },
+            { name: "Camille Rose M. Fuentebella", grade: "15 years old | Grade 11 - STEM | NONSHS", motto: "Momento mori", about: "Loves sleeping, eating, and reading." },
+            { name: "Jelleiah S. Gasataya", grade: "17 years old | Grade 11 - STEM | NONSHS", motto: "Expect the Unexpected", about: "Loves animals. Paints and photographs aesthetic things. Always has plans to travel somewhere." },
+            { name: "Faith Victoria T. Guiza", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "The best preparation for the future is to live as if there were none", about: "I love novels. I love listening to music. I love potatoes." },
+            { name: "Ashley Nicole D. Manalili", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "Carpe diem", about: "My fav combo: Potato Corner and sundae." },
+            { name: "Nicole Rae N. Paclibar", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "Past is past🙏", about: "Masakiton. Loves eating chocolates. Loves sleeping pero gapulaw." },
+            { name: "Remy Louise B. Paparon", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "Nasa Diyos ang awa, naka'y baby ang mwamwa", about: "Cute. Bebi ya ko. 100% pisan." },
+            { name: "Dhenise M. Villanueva", grade: "16 years old | Grade 11 - STEM | NONSHS", motto: "que sera, sera", about: "I love taking naps. I love cookies and cream." }
+        ];
+
+        function loadProfiles() {
+            const profilesGrid = document.getElementById('profilesGrid');
+            if (profilesGrid.children.length > 0) return;
+            
+            profiles.forEach(profile => {
+                const profileDiv = document.createElement('div');
+                profileDiv.className = 'profile-circle';
+                const initials = profile.name.substring(0, 1);
+                profileDiv.innerHTML = `
+                    <div class="circle">${initials}</div>
+                    <div class="profile-name">${profile.name}</div>
+                `;
+                profileDiv.onclick = () => openModal(profile);
+                profilesGrid.appendChild(profileDiv);
+            });
+        }
+
+        function openModal(profile) {
+            const initials = profile.name.substring(0, 1);
+            document.getElementById('modalName').textContent = profile.name;
+            document.getElementById('modalGrade').textContent = profile.grade;
+            document.getElementById('modalMotto').textContent = profile.motto || '';
+            document.getElementById('modalAbout').textContent = profile.about;
+            document.getElementById('modalCircle').textContent = initials;
+            document.getElementById('profileModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('profileModal').classList.remove('active');
+        }
+
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('profileModal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
+
